@@ -14,7 +14,13 @@
     "prepublishOnly": "run-s build",
     "test": "jest"
   },
-  "keywords": [],
+  "keywords": [
+    "snap",
+    "axis",
+    "refline",
+    "snap-axis",
+    "snap axis"
+  ],
   "files": [
     "dist",
     "*.md"
