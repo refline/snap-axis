@@ -1,6 +1,21 @@
 # snap-axis
 SnapAxis 是一个用于管理吸附轴（如水平轴或垂直轴）的类，支持吸附点的添加、删除、更新以及吸附逻辑的实现。
 
+## 使用
+
+`yarn add snap-axis` 或 `npm install snap-axis`
+
+```ts
+import { SnapAxis } from 'snap-axis'
+
+const snapAxis = new SnapAxis({
+  snapValues: [
+    ...
+  ]
+})
+
+```
+
 ## API
 
 ```typescript
