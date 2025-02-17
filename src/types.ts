@@ -32,3 +32,8 @@ export interface SnapToResult {
   snapped: boolean;
   value: number;
 }
+
+export interface SnapUpdaterOptions {
+  distance?: number;  // 吸附距离
+  disableSnap?: boolean;  // 是否禁用吸附 
+}
