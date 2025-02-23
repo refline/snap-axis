@@ -1,24 +1,23 @@
 import type { ISnapValue } from "./types";
 import type { SnapAxis } from "./SnapAxis";
 
-export function hasAddSnapValue(map: SnapAxis['snapValueToIdsMap'], value: number) {
+export function hasAddSnapValue(map: SnapAxis["snapValueToIdsMap"], value: number) {
   if (!map.has(value)) {
-    return false
+    return false;
   }
 
-  const ids: Set<ISnapValue['id']> = map.get(value)
+  const ids: Set<ISnapValue["id"]> = map.get(value);
   if (ids.size === 0) {
-    return false
+    return false;
   }
 
-  return true
+  return true;
 }
 
-
 export function isCloseEqual(a: number, b: number, tolerance = 1e-9) {
-  const diff = Math.abs(a - b)
+  const diff = Math.abs(a - b);
 
-  return diff <= tolerance
+  return diff <= tolerance;
 }
 
 // 用于判断是否为 null 或 undefined

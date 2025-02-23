@@ -19,5 +19,9 @@
     "**/node_modules/**": true,
     "**/tmp/**": true,
     "**/dist/**": true
+  },
+  "editor.formatOnSave": true,
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }
