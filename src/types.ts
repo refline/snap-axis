@@ -41,3 +41,11 @@ export interface SnapUpdaterOptions {
   distance?: number; // 吸附距离
   disableSnap?: boolean; // 是否禁用吸附
 }
+
+export interface SnapGroupToResults {
+  /**
+   * 是否触发了吸附
+   */
+  snapped: boolean;
+  values: number[];
+}

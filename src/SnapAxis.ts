@@ -1,6 +1,7 @@
 import { hasAddSnapValue, isCloseEqual, isNil } from "./helpers";
 import { SnapValueManager } from "./SnapValueManager";
 import {
+  SnapGroupToResults,
   ISnapValue,
   SnapAxisOptions,
   SnapDirection,
@@ -9,6 +10,11 @@ import {
   SnapToResult,
   SnapUpdaterOptions,
 } from "./types";
+
+const DefaultGetUpdaterOptions: SnapUpdaterOptions = {
+  disableSnap: false,
+  distance: 5,
+};
 
 /**
  * SnapAxis 是一个用于管理吸附轴（如水平轴或垂直轴）的类，支持吸附点的添加、删除、更新以及吸附逻辑的实现。
@@ -362,6 +368,18 @@ export class SnapAxis {
     return { value: targetAxisValue, snapped: false };
   }
 
+  snapGroupTo(
+    axisValues: number[],
+    offset: number[],
+    options: { distance: number }
+  ): SnapGroupToResults {
+    // TODO:
+    return {
+      values: [],
+      snapped: false,
+    };
+  }
+
   /**
    * 获取吸附点的详细信息。
    * @param {number} value - 吸附值
@@ -516,15 +534,16 @@ export class SnapAxis {
   getSnapUpdater(
     initValue: number,
     startAxisValue: number,
-    options: SnapUpdaterOptions = {}
+    options?: SnapUpdaterOptions
   ): (currentAxisValue: number, options?: SnapUpdaterOptions) => SnapToResult {
     let currentValue = initValue;
     let lastAxisValue = startAxisValue;
-    let opts = {
-      disableSnap: false, // 是否禁用吸附
-      distance: 5, // 吸附距离
-      ...options,
-    };
+    let opts = options
+      ? {
+          ...DefaultGetUpdaterOptions,
+          ...options,
+        }
+      : DefaultGetUpdaterOptions;
 
     return (currentAxisValue: number, options?: SnapUpdaterOptions): SnapToResult => {
       if (isCloseEqual(currentAxisValue, lastAxisValue)) {
@@ -567,6 +586,61 @@ export class SnapAxis {
       currentValue = result.value;
 
       return result;
+    };
+  }
+  // TODO: 待完善
+  getSnapGroupUpdater(
+    initValues: number[],
+    startAxisValue: number,
+    options?: SnapUpdaterOptions
+  ): (currentAxisValue: number, options?: SnapUpdaterOptions) => SnapGroupToResults {
+    const updaters = initValues.map((value) => this.getSnapUpdater(value, startAxisValue, options));
+    const lastResultValues = [...initValues];
+
+    return (currentAxisValue: number, options?: SnapUpdaterOptions) => {
+      let offset = 0;
+      let snapped = false;
+      const snappedOffsets = [];
+
+      for (let i = 0; i < updaters.length; i++) {
+        const result = updaters[i](currentAxisValue, options);
+
+        const diff = result.value - lastResultValues[i];
+
+        if (!diff) {
+          return {
+            values: [...lastResultValues],
+            snapped: false,
+          };
+        }
+
+        if (result.snapped) {
+          snapped = true;
+          snappedOffsets.push(diff);
+        } else {
+          offset = diff;
+        }
+      }
+
+      const res = {
+        snapped,
+        values: [...lastResultValues],
+      };
+
+      if (snapped) {
+        offset = snappedOffsets.reduce((prev, curr) => {
+          return Math.abs(curr) < Math.abs(prev) ? curr : prev;
+        }, Infinity);
+      }
+
+      // TODO:
+
+      for (let i = 0; i < lastResultValues.length; i++) {
+        lastResultValues[i] += offset;
+        res.values[i] = lastResultValues[i];
+      }
+
+      return res;
     };
   }
 }
