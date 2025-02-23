@@ -508,12 +508,16 @@ export class SnapAxis {
 
   /**
    * 获取吸附更新器。
-   * @param initValue
-   * @param startAxisValue
+   * @param initValue 初始值
+   * @param startAxisValue 起始坐标轴值（例如事件的pageX或pageY）
    * @param options
-   * @returns
+   * @returns {Function} - 吸附更新器
    */
-  getSnapUpdater(initValue: number, startAxisValue: number, options: SnapUpdaterOptions = {}) {
+  getSnapUpdater(
+    initValue: number,
+    startAxisValue: number,
+    options: SnapUpdaterOptions = {}
+  ): (currentAxisValue: number, options?: SnapUpdaterOptions) => SnapToResult {
     let currentValue = initValue;
     let lastAxisValue = startAxisValue;
     let opts = {
@@ -533,16 +537,15 @@ export class SnapAxis {
 
       const noSnapValue = initValue + currentAxisValue - startAxisValue;
 
-      // TODO: 不能这样，考虑下，[ 1,2,3,4,5,6,7,8 ] 从 1 移动1px到5px，此时值应该是负数，如果直接使用abs，则会吸附到6！！！
       let offset = noSnapValue - currentValue;
 
       if (direction === SnapDirection.PREV) {
         if (offset > 0) {
-          offset = 0; //-offset
+          offset = 0;
         }
       } else {
         if (offset < 0) {
-          offset = 0; //Math.abs(offset)
+          offset = 0;
         }
       }
 
@@ -559,7 +562,7 @@ export class SnapAxis {
 
       const result = opts.disableSnap
         ? { value: currentValue + offset, snapped: false }
-        : this.snapTo(currentValue, offset, { distance: 5 });
+        : this.snapTo(currentValue, offset, { distance: opts.distance });
 
       currentValue = result.value;
 
