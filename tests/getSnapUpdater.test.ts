@@ -307,4 +307,73 @@ describe("SnapAxis.getSnapUpdater", () => {
       snapped: false,
     });
   });
+
+  it("getSnapUpdater - 05", () => {
+    const saX = createSnapAxis02();
+
+    let pageX = 0;
+    const updater = saX.getSnapUpdater(31, pageX, {
+      disableSnap: true
+    });
+
+    let nextPageX = pageX - 1; // 30
+    expect(updater(nextPageX)).toMatchObject({
+      value: 30,
+      snapped: false,
+    });
+
+    nextPageX--; // 29
+    expect(updater(nextPageX)).toMatchObject({
+      value: 29,
+      snapped: false,
+    });
+
+    nextPageX--; // 28
+    expect(updater(nextPageX)).toMatchObject({
+      value: 28,
+      snapped: false,
+    });
+
+    nextPageX--; // 27
+    expect(updater(nextPageX)).toMatchObject({
+      value: 27,
+      snapped: false,
+    });
+
+    nextPageX--; // 26
+    expect(updater(nextPageX)).toMatchObject({
+      value: 26,
+      snapped: false,
+    });
+
+    nextPageX--; // 25
+    expect(updater(nextPageX)).toMatchObject({
+      value: 25,
+      snapped: false,
+    });
+
+    nextPageX--; // 24
+    expect(updater(nextPageX)).toMatchObject({
+      value: 24,
+      snapped: false,
+    });
+
+    nextPageX--; // 23
+    expect(updater(nextPageX)).toMatchObject({
+      value: 23,
+      snapped: false,
+    });
+
+    nextPageX--; // 22
+    expect(updater(nextPageX)).toMatchObject({
+      value: 22,
+      snapped: false,
+    });
+
+    nextPageX--; // 21
+    expect(updater(nextPageX)).toMatchObject({
+      value: 21,
+      snapped: false,
+    });
+  });
 });
