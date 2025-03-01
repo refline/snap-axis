@@ -381,6 +381,21 @@ export class SnapAxis {
     offset: number,
     options: { distance: number }
   ): SnapGroupToResults {
+    if (!axisValues.length) {
+      return {
+        values: [],
+        snapped: false,
+      };
+    }
+
+    if (axisValues.length === 1) {
+      const result = this.snapTo(axisValues[0], offset, options);
+      return {
+        values: [result.value],
+        snapped: result.snapped,
+      };
+    }
+
     // 是否存在吸附点
     let hasSnapValue = false;
     // 是否发生了吸附
@@ -586,19 +601,18 @@ export class SnapAxis {
     return this.snapToNearest(value, { ...options, direction: SnapDirection.NEXT });
   }
 
-  /**
-   * 获取吸附更新器。
-   * @param initValue 初始值
-   * @param startAxisValue 起始坐标轴值（例如事件的pageX或pageY）
-   * @param options
-   * @returns {Function} - 吸附更新器
-   */
-  getSnapUpdater(
-    initValue: number,
+  getSnapGroupUpdater(
+    initValues: number[],
     startAxisValue: number,
     options?: SnapUpdaterOptions
-  ): (currentAxisValue: number, options?: SnapUpdaterOptions) => SnapToResult {
-    let currentValue = initValue;
+  ): (currentAxisValue: number, options?: SnapUpdaterOptions) => SnapGroupToResults {
+    if (initValues.length === 0) {
+      return () => {
+        return { values: [], snapped: false };
+      };
+    }
+
+    let currentValues = initValues;
     let lastAxisValue = startAxisValue;
     let opts = options
       ? {
@@ -607,18 +621,18 @@ export class SnapAxis {
         }
       : DefaultGetUpdaterOptions;
 
-    return (currentAxisValue: number, options?: SnapUpdaterOptions): SnapToResult => {
+    return (currentAxisValue: number, options?: SnapUpdaterOptions): SnapGroupToResults => {
       if (isCloseEqual(currentAxisValue, lastAxisValue)) {
-        return { value: currentValue, snapped: false };
+        return { values: currentValues, snapped: false };
       }
 
       const direction = currentAxisValue > lastAxisValue ? SnapDirection.NEXT : SnapDirection.PREV;
 
       lastAxisValue = currentAxisValue;
 
-      const noSnapValue = initValue + currentAxisValue - startAxisValue;
+      const noSnapValue = initValues[0] + currentAxisValue - startAxisValue;
 
-      let offset = noSnapValue - currentValue;
+      let offset = noSnapValue - currentValues[0];
 
       if (direction === SnapDirection.PREV) {
         if (offset > 0) {
@@ -631,7 +645,7 @@ export class SnapAxis {
       }
 
       if (!offset) {
-        return { value: currentValue, snapped: false };
+        return { values: currentValues, snapped: false };
       }
 
       if (options) {
@@ -642,67 +656,36 @@ export class SnapAxis {
       }
 
       const result = opts.disableSnap
-        ? { value: currentValue + offset, snapped: false }
-        : this.snapTo(currentValue, offset, { distance: opts.distance });
+        ? { values: currentValues.map((value) => value + offset), snapped: false }
+        : this.snapGroupTo(currentValues, offset, { distance: opts.distance });
 
-      currentValue = result.value;
+      currentValues = result.values;
 
       return result;
     };
   }
-  // TODO: 待完善
-  getSnapGroupUpdater(
-    initValues: number[],
+
+  /**
+   * 获取吸附更新器。
+   * @param initValue 初始值
+   * @param startAxisValue 起始坐标轴值（例如事件的pageX或pageY）
+   * @param options
+   * @returns {Function} - 吸附更新器
+   */
+  getSnapUpdater(
+    initValue: number,
     startAxisValue: number,
     options?: SnapUpdaterOptions
-  ): (currentAxisValue: number, options?: SnapUpdaterOptions) => SnapGroupToResults {
-    const updaters = initValues.map((value) => this.getSnapUpdater(value, startAxisValue, options));
-    const lastResultValues = [...initValues];
+  ): (currentAxisValue: number, options?: SnapUpdaterOptions) => SnapToResult {
+    const updater = this.getSnapGroupUpdater([initValue], startAxisValue, options);
 
-    return (currentAxisValue: number, options?: SnapUpdaterOptions) => {
-      let offset = 0;
-      let snapped = false;
-      const snappedOffsets = [];
+    return (currentAxisValue: number, options?: SnapUpdaterOptions): SnapToResult => {
+      const result = updater(currentAxisValue, options);
 
-      for (let i = 0; i < updaters.length; i++) {
-        const result = updaters[i](currentAxisValue, options);
-
-        const diff = result.value - lastResultValues[i];
-
-        if (!diff) {
-          return {
-            values: [...lastResultValues],
-            snapped: false,
-          };
-        }
-
-        if (result.snapped) {
-          snapped = true;
-          snappedOffsets.push(diff);
-        } else {
-          offset = diff;
-        }
-      }
-
-      const res = {
-        snapped,
-        values: [...lastResultValues],
+      return {
+        value: result.values[0],
+        snapped: result.snapped,
       };
-
-      if (snapped) {
-        offset = snappedOffsets.reduce((prev, curr) => {
-          return Math.abs(curr) < Math.abs(prev) ? curr : prev;
-        }, Infinity);
-      }
-
-      // TODO:
-
-      for (let i = 0; i < lastResultValues.length; i++) {
-        lastResultValues[i] += offset;
-        res.values[i] = lastResultValues[i];
-      }
-
-      return res;
     };
   }
 }
