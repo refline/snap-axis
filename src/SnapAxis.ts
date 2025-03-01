@@ -368,14 +368,76 @@ export class SnapAxis {
     return { value: targetAxisValue, snapped: false };
   }
 
+  /**
+   * 根据给定多个值和偏移量，计算吸附后的目标值。
+   * @param {number[]} axisValues - 当前坐标轴的多值
+   * @param {number} offset - 偏移量
+   * @param {Object} options - 吸附选项
+   * @param {number} options.distance - 吸附距离
+   * @returns {values:number[], snapped: boolean} - 吸附后的目标值及状态
+   */
   snapGroupTo(
     axisValues: number[],
-    offset: number[],
+    offset: number,
     options: { distance: number }
   ): SnapGroupToResults {
-    // TODO:
+    // 是否存在吸附点
+    let hasSnapValue = false;
+    // 是否发生了吸附
+    let snapped = false;
+    // 最小偏移量
+    let minOffset = 0;
+    let d1 = Infinity;
+
+    for (let i = 0; i < axisValues.length; i++) {
+      const value = axisValues[i];
+      const result = this.snapTo(value, offset, options);
+
+      const d2 = Math.abs(result.value - value);
+      if (!d2) {
+        hasSnapValue = true;
+      }
+
+      if (result.snapped) {
+        snapped = true;
+
+        if (d2 < d1) {
+          d1 = d2;
+          minOffset = result.value - value;
+        }
+      }
+    }
+
+    if (!hasSnapValue && !snapped) {
+      return {
+        values: axisValues.map((value) => value + offset),
+        snapped: false,
+      };
+    }
+
+    if (hasSnapValue && !snapped) {
+      return {
+        values: [...axisValues],
+        snapped: false,
+      };
+    }
+
+    if (hasSnapValue && snapped) {
+      return {
+        values: axisValues.map((value) => value + minOffset),
+        snapped: true,
+      };
+    }
+
+    if (!hasSnapValue && snapped) {
+      return {
+        values: axisValues.map((value) => value + minOffset),
+        snapped: true,
+      };
+    }
+
     return {
-      values: [],
+      values: axisValues.map((value) => value + offset),
       snapped: false,
     };
   }
