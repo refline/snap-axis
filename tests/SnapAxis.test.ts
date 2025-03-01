@@ -771,6 +771,11 @@ describe("SnapAxis", () => {
       snapped: false,
       value: 10,
     });
+
+    expect(sa.snapGroupToNearest([10, 20])).toEqual({
+      snapped: false,
+      values: [10, 20],
+    });
   });
 
   it("SnapAxis snapToNearest - 02", () => {
@@ -789,6 +794,16 @@ describe("SnapAxis", () => {
     expect(sa.snapToNearest(-30)).toEqual({
       snapped: true,
       value: -10,
+    });
+
+    expect(sa.snapGroupToNearest([50, 42])).toEqual({
+      snapped: true,
+      values: [28, 20],
+    });
+
+    expect(sa.snapGroupToNearest([-30, 37])).toEqual({
+      snapped: true,
+      values: [-47, 20],
     });
   });
 
@@ -813,6 +828,11 @@ describe("SnapAxis", () => {
     expect(sa.snapToNearest(5)).toEqual({
       snapped: true,
       value: 20,
+    });
+
+    expect(sa.snapGroupToNearest([2, 10, 5])).toEqual({
+      snapped: true,
+      values: [12, 20, 15],
     });
   });
 
@@ -857,6 +877,16 @@ describe("SnapAxis", () => {
     expect(sa.snapToNearestIfNeeded(-10)).toEqual({
       snapped: false,
       value: -10,
+    });
+
+    expect(sa.snapGroupToNearestIfNeeded([20, 11])).toEqual({
+      snapped: false,
+      values: [20, 11],
+    });
+
+    expect(sa.snapGroupToNearestIfNeeded([21, 11])).toEqual({
+      snapped: true,
+      values: [20, 10],
     });
   });
 
