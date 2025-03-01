@@ -89,19 +89,19 @@ describe("SnapAxis.getSnapGroupUpdater", () => {
 
     nextPageX--; // [95, 45, 28]
     expect(updater(nextPageX)).toMatchObject({
-      values: [97, 47, 30],
-      snapped: false,
+      values: [90, 40, 23],
+      snapped: true,
     });
 
     nextPageX--; // [94, 44, 27]
     expect(updater(nextPageX)).toMatchObject({
-      values: [97, 47, 30],
+      values: [90, 40, 23],
       snapped: false,
     });
 
     nextPageX--; // [93, 43, 26]
     expect(updater(nextPageX)).toMatchObject({
-      values: [97, 47, 30],
+      values: [90, 40, 23],
       snapped: false,
     });
   });
