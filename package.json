@@ -1,6 +1,6 @@
 {
   "name": "snap-axis",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "SnapAxis 是一个用于管理吸附轴（如水平轴或垂直轴）的类，支持吸附点的添加、删除、更新以及吸附逻辑的实现。",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
