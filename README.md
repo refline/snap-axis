@@ -308,6 +308,7 @@ interface SnapGroupToResults {
 
 interface SnapUpdaterOptions {
   distance?: number;
+  scale?: number;
   disableSnap?: boolean;
 }
 ```
