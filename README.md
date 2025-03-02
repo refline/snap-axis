@@ -1,34 +1,282 @@
-# snap-axis
+正在收集工作区信息# snap-axis
+
 SnapAxis 是一个用于管理吸附轴（如水平轴或垂直轴）的类，支持吸附点的添加、删除、更新以及吸附逻辑的实现。
 
-## 使用
+## 安装
 
-`yarn add snap-axis` 或 `npm install snap-axis`
+使用 npm 或 yarn 安装：
+
+```sh
+npm install snap-axis
+```
+
+或
+
+```sh
+yarn add snap-axis
+```
+
+## 使用示例
 
 ```ts
-import { SnapAxis } from 'snap-axis'
+import { SnapAxis } from "snap-axis";
 
 const snapAxis = new SnapAxis({
   snapValues: [
-    ...
-  ]
-})
+    { value: 10, id: "10" },
+    { value: 20, id: "20" },
+    { value: 30, id: "30" },
+  ],
+});
+
+let startPageX = 0;
+let result;
+const updater = snapAxis.getSnapGroupUpdater([3, 30, 50], startPageX, { distance: 5 });
+
+startPageX++;
+result = updater(startPageX);
+console.log(result); // { values: [4,31,51], snapped: false }
+
+startPageX++;
+result = updater(startPageX);
+console.log(result); // { values: [10,37,57], snapped: true }
+
+startPageX++;
+result = updater(startPageX);
+console.log(result); // { values: [10,37,57], snapped: false }
+
+// ...
 
 ```
 
-## API
+## API 示例
+
+### getSnapUpdater 吸附更新器
+
+```ts
+const snapAxis = new SnapAxis({
+  snapValues: [
+    { value: 10, id: "10" },
+    { value: 20, id: "20" },
+    { value: 30, id: "30" },
+  ],
+});
+let pageX = 1;
+const updater = snapAxis.getSnapUpdater(8, pageX);
+pageX++;
+const result = updater(pageX);
+console.log(result); // { value: 10, snapped: true }
+
+pageX++;
+const result = updater(pageX);
+console.log(result); // { value: 10, snapped: false }
+```
+
+### getSnapGroupUpdater 吸附组更新器
+
+```ts
+const snapAxis = new SnapAxis({
+  snapValues: [
+    { value: 10, id: "10" },
+    { value: 20, id: "20" },
+    { value: 30, id: "30" },
+  ],
+});
+const updater = snapAxis.getSnapGroupUpdater([10, 20], 0);
+const result = updater(1);
+console.log(result); // { values: [10, 20], snapped: false }
+```
+
+### 添加吸附点
+
+```ts
+const snapAxis = new SnapAxis();
+snapAxis.addSnapValue({ value: 10, id: "10" });
+snapAxis.addSnapValue({ value: 20, id: "20" });
+snapAxis.addSnapValue({ value: 30, id: "30" });
+```
+
+### updateSnapValue 更新吸附点
+
+```ts
+snapAxis.updateSnapValue({ value: 25, id: "20" });
+```
+
+### deleteSnapValue 删除吸附点
+
+```ts
+snapAxis.deleteSnapValue({ value: 25, id: "20" });
+```
+
+### addSnapValues 批量添加吸附点
+
+```ts
+const snapAxis = new SnapAxis();
+const snapValues = [
+  { value: 10, id: "10" },
+  { value: 20, id: "20" },
+  { value: 30, id: "30" },
+];
+snapAxis.addSnapValues(snapValues);
+```
+
+### deleteSnapValues 批量删除吸附点
+
+```ts
+const snapAxis = new SnapAxis();
+const snapValues = [
+  { value: 10, id: "10" },
+  { value: 20, id: "20" },
+  { value: 30, id: "30" },
+];
+snapAxis.addSnapValues(snapValues);
+snapAxis.deleteSnapValues(snapValues);
+```
+
+### deleteSnapValueById 根据 ID 删除吸附点
+
+```ts
+const snapAxis = new SnapAxis();
+snapAxis.addSnapValue({ value: 10, id: "10" });
+snapAxis.deleteSnapValueById("10");
+```
+
+### deleteSnapValueByIds 批量根据 ID 删除吸附点
+
+```ts
+const snapAxis = new SnapAxis();
+const snapValues = [
+  { value: 10, id: "10" },
+  { value: 20, id: "20" },
+  { value: 30, id: "30" },
+];
+snapAxis.addSnapValues(snapValues);
+snapAxis.deleteSnapValueByIds(["10", "20", "30"]);
+```
+
+### getSnapValues 获取所有吸附点
+
+```ts
+const snapValues = snapAxis.getSnapValues();
+console.log(snapValues); // [{ value: 10, id: "10" }, { value: 30, id: "30" }]
+```
+
+### getSnappedValues 获取吸附值的详细信息
+
+```ts
+snapAxis.deleteSnapValue({ value: 10, id: "A" });
+snapAxis.deleteSnapValue({ value: 10, id: "B" });
+const snappedValues = snapAxis.getSnappedValues(10);
+console.log(snappedValues); // [{ value: 10, id: "A" },{ value: 10, id: "B" }]
+```
+
+### snapToNearest 吸附到最近的吸附点
+
+```ts
+const result = snapAxis.snapToNearest(18);
+console.log(result); // { snapped: true, value: 20 }
+console.log(snapAxis.getSnappedValues(result.value)); // [...]
+```
+
+### snapToPrev 吸附到上一个吸附点
+
+```ts
+const snapAxis = new SnapAxis({
+  snapValues: [
+    { value: 10, id: "10" },
+    { value: 20, id: "20" },
+    { value: 30, id: "30" },
+  ],
+});
+const result = snapAxis.snapToPrev(25);
+console.log(result); // { snapped: true, value: 20 }
+```
+
+### snapToNext 吸附到下一个吸附点
+
+```ts
+const snapAxis = new SnapAxis({
+  snapValues: [
+    { value: 10, id: "10" },
+    { value: 20, id: "20" },
+    { value: 30, id: "30" },
+  ],
+});
+const result = snapAxis.snapToNext(15);
+console.log(result); // { snapped: true, value: 20 }
+```
+
+### snapToNearest 吸附到最近的吸附点（带方向）
+
+```ts
+const snapAxis = new SnapAxis({
+  snapValues: [
+    { value: 10, id: "10" },
+    { value: 20, id: "20" },
+    { value: 30, id: "30" },
+  ],
+});
+const result = snapAxis.snapToNearest(18, { direction: SnapDirection.PREV });
+console.log(result); // { snapped: true, value: 10 }
+```
+
+### snapToNearestIfNeeded 吸附到最近的吸附点（如果需要）
+
+```ts
+const snapAxis = new SnapAxis({
+  snapValues: [
+    { value: 10, id: "10" },
+    { value: 20, id: "20" },
+    { value: 30, id: "30" },
+  ],
+});
+const result = snapAxis.snapToNearestIfNeeded(18);
+console.log(result); // { snapped: true, value: 20 }
+
+const result = snapAxis.snapToNearestIfNeeded(10); // 已经处于吸附状态
+console.log(result); // { snapped: false, value: 10 }
+```
+
+### snapGroupToNearest 吸附到最近的吸附点组
+
+```ts
+const snapAxis = new SnapAxis({
+  snapValues: [
+    { value: 10, id: "10" },
+    { value: 20, id: "20" },
+    { value: 30, id: "30" },
+  ],
+});
+const result = snapAxis.snapGroupToNearest([18, 25]);
+console.log(result); // { snapped: true, values: [20, 27] }
+```
+
+### snapGroupToNearestIfNeeded 吸附到最近的吸附点组（如果需要）
+
+```ts
+const snapAxis = new SnapAxis({
+  snapValues: [
+    { value: 10, id: "10" },
+    { value: 20, id: "20" },
+    { value: 30, id: "30" },
+  ],
+});
+const result = snapAxis.snapGroupToNearestIfNeeded([18, 25]);
+console.log(result); // { snapped: true, values: [20, 27] }
+```
+
+## 接口定义
 
 ```typescript
-
 interface ISnapValue {
-  id: string | number
-  value: number
-  [x: string | number]: any
+  id: string | number;
+  value: number;
+  [x: string | number]: any;
 }
 
 interface SnapAxisOptions {
   snapValues?: ISnapValue[];
-  debug?: boolean
+  debug?: boolean;
   getSnapUnitValue?: () => number;
 }
 
@@ -39,7 +287,7 @@ enum SnapDirection {
 }
 
 interface SnapToNearestOptions {
-  direction?: SnapDirection; 
+  direction?: SnapDirection;
   distance?: number;
 }
 
@@ -53,119 +301,64 @@ interface SnapToResult {
   value: number;
 }
 
+interface SnapGroupToResults {
+  snapped: boolean;
+  values: number[];
+}
 
+interface SnapUpdaterOptions {
+  distance?: number;
+  disableSnap?: boolean;
+}
+```
+
+## 类定义
+
+```typescript
 class SnapAxis {
-    /**
-     * 构造函数，初始化吸附轴。
-     * @param {SnapAxisOptions} options - 配置选项，包含吸附点数组和获取吸附单位值的函数。
-     */
-    constructor(options?: SnapAxisOptions);
-   
-    has(id: ISnapValue['id']): boolean;
-    /**
-     * 判断是否存在指定值的吸附点。
-     * @param {number} value - 吸附值
-     * @returns {boolean} - 是否存在
-     */
-    hasValue(value: ISnapValue['value']): boolean;
-    /**
-     * 添加吸附点。
-     * @param {ISnapValue} snapValue - 要添加的吸附点
-     */
-    addSnapValue(snapValue: ISnapValue): void;
-    /**
-     * 更新吸附点。
-     * @param {ISnapValue} snapValue - 要更新的吸附点
-     * @returns {boolean} - 是否更新成功
-     */
-    updateSnapValue(snapValue: ISnapValue): boolean;
-    /**
-     * 批量添加吸附点。
-     * @param {ISnapValue[]} snapValues - 要添加的吸附点数组
-     */
-    addSnapValues(snapValues: ISnapValue[]): void;
-    /**
-      * 删除吸附点。
-      * @param {ISnapValue} snapValue - 要删除的吸附点
-      * @returns {boolean} - 是否删除成功
-      */
-    deleteSnapValue(snapValue: ISnapValue): boolean;
-    /**
-     * 根据 id 删除吸附点。
-     * @param {ISnapValue['id']} id - 吸附点 id
-     * @returns {boolean} - 是否删除成功
-     */
-    deleteSnapValueById(id: ISnapValue['id']): boolean;
-    /**
-     * 批量删除吸附点。
-     * @param {ISnapValue[]} snapValues - 要删除的吸附点数组
-     */
-    deleteSnapValues(snapValues: ISnapValue[]): void;
-    /**
-     * 根据 id 数组批量删除吸附点。
-     * @param {ISnapValue['id'][]} ids - 吸附点 id 数组
-     */
-    deleteSnapValueByIds(ids: ISnapValue['id'][]): void;
-    /**
-     * 判断是否处于吸附状态。
-     * @param {number} value - 吸附值
-     * @returns {boolean} - 是否处于吸附状态
-     */
-    checkSnapped(value: number): boolean;
-    /**
-     * 根据当前值和偏移量，计算吸附后的目标值。
-     * @param {number} axisValue - 当前坐标轴的值
-     * @param {number} offset - 偏移量
-     * @param {Object} options - 吸附选项
-     * @param {number} options.distance - 吸附距离
-     * @returns {value:number, snapped: boolean} - 吸附后的目标值及状态
-     */
-    snapTo(axisValue: number, offset: number, options: {
-        distance: number;
-    }): SnapToResult;
-    /**
-     * 获取吸附点的详细信息。
-     * @param {number} value - 吸附值
-     * @returns {ISnapValue[]} - 吸附点数组
-     */
-    getSnappedValues(value: number): ISnapValue[];
-    /**
-     * 获取所有吸附点。
-     * @returns {ISnapValue[]} - 所有吸附点数组
-     */
-    getSnapValues(): ISnapValue[];
-    /**
-     * 获取吸附值管理器。
-     * @returns {SnapValueManager} - 吸附值管理器
-     */
-    getSnapValueManager(): SnapValueManager;
-    /**
-     * 吸附到最近的吸附点。
-     * @param value
-     * @param options
-     * @returns
-     */
-    snapToNearest(value: number, options?: SnapToNearestOptions): SnapToNearestResult;
-    /**
-     * 如果当前值处于非吸附状态，则吸附到最近的吸附点。
-     * @param {number} value - 当前值
-     * @param {string} direction - 吸附方向
-     * @returns {Object} - 吸附结果
-     */
-    snapToNearestIfNeeded(value: number, options?: SnapToNearestOptions): SnapToNearestResult;
-    /**
-     * 吸附到上一个吸附点。
-     * @param value
-     * @param options
-     * @returns
-     */
-    snapToPrev(value: number, options?: Omit<SnapToNearestOptions, 'direction'>): SnapToNearestResult;
-    /**
-     * 吸附到下一个吸附点。
-     * @param value
-     * @param options
-     * @returns
-     */
-    snapToNext(value: number, options?: Omit<SnapToNearestOptions, 'direction'>): SnapToNearestResult;
+  constructor(options?: SnapAxisOptions);
+
+  has(id: ISnapValue["id"]): boolean;
+  hasValue(value: ISnapValue["value"]): boolean;
+  addSnapValue(snapValue: ISnapValue): void;
+  updateSnapValue(snapValue: ISnapValue): boolean;
+  addSnapValues(snapValues: ISnapValue[]): void;
+  deleteSnapValue(snapValue: ISnapValue): boolean;
+  deleteSnapValueById(id: ISnapValue["id"]): boolean;
+  deleteSnapValues(snapValues: ISnapValue[]): void;
+  deleteSnapValueByIds(ids: ISnapValue["id"][]): void;
+  checkSnapped(value: number): boolean;
+  snapTo(axisValue: number, offset: number, options: { distance: number }): SnapToResult;
+  snapGroupTo(
+    axisValues: number[],
+    offset: number,
+    options: { distance: number }
+  ): SnapGroupToResults;
+  getSnappedValues(value: number): ISnapValue[];
+  getSnapValues(): ISnapValue[];
+  snapToNearest(value: number, options?: SnapToNearestOptions): SnapToNearestResult;
+  snapGroupToNearest(values: number[], options?: SnapToNearestOptions): SnapGroupToResults;
+  snapToNearestIfNeeded(value: number, options?: SnapToNearestOptions): SnapToNearestResult;
+  snapGroupToNearestIfNeeded(values: number[], options?: SnapToNearestOptions): SnapGroupToResults;
+  snapToPrev(value: number, options?: Omit<SnapToNearestOptions, "direction">): SnapToNearestResult;
+  snapGroupToPrev(
+    values: number[],
+    options?: Omit<SnapToNearestOptions, "direction">
+  ): SnapGroupToResults;
+  snapToNext(value: number, options?: Omit<SnapToNearestOptions, "direction">): SnapToNearestResult;
+  snapGroupToNext(
+    values: number[],
+    options?: Omit<SnapToNearestOptions, "direction">
+  ): SnapGroupToResults;
+  getSnapGroupUpdater(
+    initValues: number[],
+    startAxisValue: number,
+    options?: SnapUpdaterOptions
+  ): (currentAxisValue: number, options?: SnapUpdaterOptions) => SnapGroupToResults;
+  getSnapUpdater(
+    initValue: number,
+    startAxisValue: number,
+    options?: SnapUpdaterOptions
+  ): (currentAxisValue: number, options?: SnapUpdaterOptions) => SnapToResult;
 }
 ```
