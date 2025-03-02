@@ -9,11 +9,13 @@ import {
   SnapToNearestResult,
   SnapToResult,
   SnapUpdaterOptions,
+  SnapOptions,
 } from "./types";
 
 const DefaultGetUpdaterOptions: SnapUpdaterOptions = {
   disableSnap: false,
   distance: 5,
+  scale: 1,
 };
 
 /**
@@ -98,14 +100,14 @@ export class SnapAxis {
    * 获取吸附单位值的默认实现。
    * @returns {number} - 吸附单位值
    */
-  private __getSnapUnitValue__ = () => 1;
+  private __getSnapUnitValue__ = (scale = 1): number => 1 / scale;
   /**
    * 获取吸附单位值。
    * @returns {number} - 吸附单位值
    */
-  private getSnapUnitValue(): number {
+  private getSnapUnitValue(scale = 1): number {
     const c = this.__getSnapUnitValue__;
-    return c();
+    return c(scale);
   }
   /**
    * 判断是否存在指定 id 的吸附点。
@@ -264,14 +266,16 @@ export class SnapAxis {
    * @param {number} options.distance - 吸附距离
    * @returns {value:number, snapped: boolean} - 吸附后的目标值及状态
    */
-  snapTo(axisValue: number, offset: number, options: { distance: number }): SnapToResult {
-    const unitValue = this.getSnapUnitValue(); // 吸附单位值
+  snapTo(axisValue: number, offset: number, options: SnapOptions): SnapToResult {
+    const { distance, minStep } = options;
+
+    const unitValue = minStep || this.getSnapUnitValue(1); // 吸附单位值
+
     const newSnapValue = axisValue + offset;
     const targetAxisValue = axisValue + offset;
     const absOffset = Math.abs(offset);
     // const halfUnitValue = unitValue * 0.5
     // const minStepValue = halfUnitValue
-    const { distance } = options;
 
     if (isCloseEqual(absOffset, 0)) {
       return { value: axisValue, snapped: false };
@@ -386,11 +390,7 @@ export class SnapAxis {
    * @param {number} options.distance - 吸附距离
    * @returns {values:number[], snapped: boolean} - 吸附后的目标值及状态
    */
-  snapGroupTo(
-    axisValues: number[],
-    offset: number,
-    options: { distance: number }
-  ): SnapGroupToResults {
+  snapGroupTo(axisValues: number[], offset: number, options: SnapOptions): SnapGroupToResults {
     if (!axisValues.length) {
       return {
         values: [],
@@ -700,11 +700,22 @@ export class SnapAxis {
         return { values: currentValues, snapped: false };
       }
 
+      if (options) {
+        opts = {
+          ...opts,
+          ...options,
+        };
+      }
+
+      const scale = opts.scale || 1;
+
       const direction = currentAxisValue > lastAxisValue ? SnapDirection.NEXT : SnapDirection.PREV;
 
       lastAxisValue = currentAxisValue;
 
-      const noSnapValue = initValues[0] + currentAxisValue - startAxisValue;
+      const delta = (currentAxisValue - startAxisValue) / scale;
+
+      const noSnapValue = initValues[0] + delta; //currentAxisValue - startAxisValue;
 
       let offset = noSnapValue - currentValues[0];
 
@@ -722,16 +733,12 @@ export class SnapAxis {
         return { values: currentValues, snapped: false };
       }
 
-      if (options) {
-        opts = {
-          ...opts,
-          ...options,
-        };
-      }
-
       const result = opts.disableSnap
         ? { values: currentValues.map((value) => value + offset), snapped: false }
-        : this.snapGroupTo(currentValues, offset, { distance: opts.distance });
+        : this.snapGroupTo(currentValues, offset, {
+            distance: opts.distance / scale,
+            minStep: this.getSnapUnitValue(scale),
+          });
 
       currentValues = result.values;
 

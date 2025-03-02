@@ -7,13 +7,18 @@ export interface ISnapValue {
 export interface SnapAxisOptions {
   snapValues?: ISnapValue[];
   debug?: boolean;
-  getSnapUnitValue?: () => number;
+  getSnapUnitValue?: (scale?: number) => number;
 }
 
 export enum SnapDirection {
   PREV = 0,
   NEXT = 1,
   BOTH = 2,
+}
+
+export interface SnapOptions {
+  distance: number;
+  minStep?: number;
 }
 
 export interface SnapToNearestOptions {
@@ -39,6 +44,7 @@ export interface SnapToResult {
 
 export interface SnapUpdaterOptions {
   distance?: number; // 吸附距离
+  scale?: number; // 缩放比例
   disableSnap?: boolean; // 是否禁用吸附
 }
 
