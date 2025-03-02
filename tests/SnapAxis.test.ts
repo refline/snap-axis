@@ -1099,4 +1099,51 @@ describe("SnapAxis", () => {
       value: 19,
     });
   });
+
+  it("SnapAxis getSnapUpdater with scale - 01", () => {
+    const sa = new SnapAxis({
+      snapValues: [
+        { value: -30, id: "-3" },
+        { value: -10, id: "1" },
+        { value: 20, id: "2" },
+        { value: 30, id: "3" },
+      ],
+    });
+
+    let pageX = 1;
+    const updater = sa.getSnapUpdater(25, pageX, {
+      distance: 6,
+      scale: 2,
+    });
+
+    expect(updater(++pageX)).toEqual({
+      snapped: false,
+      value: 25.5,
+    });
+
+    expect(updater(++pageX)).toEqual({
+      snapped: false,
+      value: 26,
+    });
+
+    expect(updater(++pageX)).toEqual({
+      snapped: false,
+      value: 26.5,
+    });
+
+    expect(updater(++pageX)).toEqual({
+      snapped: true,
+      value: 30,
+    });
+
+    expect(updater(++pageX)).toEqual({
+      snapped: false,
+      value: 30,
+    });
+
+    expect(updater(++pageX)).toEqual({
+      snapped: false,
+      value: 30,
+    });
+  });
 });
