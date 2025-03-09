@@ -49,13 +49,13 @@ export interface SnapUpdaterOptions {
 }
 
 export interface SnapUpdaterOverrideOptions extends SnapUpdaterOptions {
-  initValue?: number;
-  delta?: number; // 自定义偏移量
+  initValue?: number; // 同步外部最新值
+  delta?: number; // 自定义偏移量，可能存在一些特殊场景，通常不建议使用
 }
 
 export interface SnapGroupUpdaterOverrideOptions extends SnapUpdaterOptions {
-  initValues?: number[];
-  delta?: number; // 自定义偏移量
+  initValues?: number[]; // 同步外部最新值
+  delta?: number; // 自定义偏移量，可能存在一些特殊场景，通常不建议使用
 }
 
 export interface SnapGroupToResults {
