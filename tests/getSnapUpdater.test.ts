@@ -69,6 +69,21 @@ function createSnapAxis02() {
   });
 }
 
+function createSnapAxis03() {
+  const snapValues = [
+    { value: 0, id: "0" },
+    { value: 20, id: "20" },
+    { value: 25, id: "25" },
+    { value: 30, id: "30" },
+    { value: 35, id: "35" },
+    { value: 50, id: "50" },
+  ];
+
+  return new SnapAxis({
+    snapValues,
+  });
+}
+
 describe("SnapAxis.getSnapUpdater", () => {
   it("getSnapUpdater - 01", () => {
     const saX = createSnapAxis01();
@@ -313,7 +328,7 @@ describe("SnapAxis.getSnapUpdater", () => {
 
     let pageX = 0;
     const updater = saX.getSnapUpdater(31, pageX, {
-      disableSnap: true
+      disableSnap: true,
     });
 
     let nextPageX = pageX - 1; // 30
@@ -374,6 +389,329 @@ describe("SnapAxis.getSnapUpdater", () => {
     expect(updater(nextPageX)).toMatchObject({
       value: 21,
       snapped: false,
+    });
+  });
+
+  it("getSnapUpdater - with scale change 01", () => {
+    const saX = createSnapAxis03();
+
+    let pageX = 0;
+    const updater = saX.getSnapUpdater(31, pageX, {
+      distance: 5,
+      scale: 0.5,
+    });
+
+    let nextPageX = pageX - 1; // 30
+    expect(updater(nextPageX)).toMatchObject({
+      value: 25,
+      snapped: true,
+    });
+
+    nextPageX--; // 29
+    expect(updater(nextPageX)).toMatchObject({
+      value: 25,
+      snapped: false,
+    });
+
+    nextPageX--; // 28
+    expect(updater(nextPageX)).toMatchObject({
+      value: 25,
+      snapped: false,
+    });
+
+    nextPageX--; // 27
+    expect(updater(nextPageX)).toMatchObject({
+      value: 25,
+      snapped: false,
+    });
+
+    nextPageX--; // 26
+    expect(updater(nextPageX)).toMatchObject({
+      value: 20,
+      snapped: true,
+    });
+
+    nextPageX--; // 25
+    expect(updater(nextPageX)).toMatchObject({
+      value: 20,
+      snapped: false,
+    });
+
+    nextPageX--; // 24
+    expect(updater(nextPageX)).toMatchObject({
+      value: 20,
+      snapped: false,
+    });
+
+    nextPageX--; // 23
+    expect(updater(nextPageX)).toMatchObject({
+      value: 20,
+      snapped: false,
+    });
+
+    nextPageX--; // 22
+    expect(updater(nextPageX)).toMatchObject({
+      value: 20,
+      snapped: false,
+    });
+
+    nextPageX--; // 21
+    expect(updater(nextPageX)).toMatchObject({
+      value: 20,
+      snapped: false,
+    });
+
+    nextPageX--; // 20
+    expect(updater(nextPageX)).toMatchObject({
+      value: 0,
+      snapped: true,
+    });
+
+    nextPageX--; // 19
+    expect(updater(nextPageX)).toMatchObject({
+      value: 0,
+      snapped: false,
+    });
+
+    nextPageX -= 6; // 13
+    expect(updater(nextPageX)).toMatchObject({
+      value: 0,
+      snapped: false,
+    });
+
+    nextPageX -= 2; // 11
+    expect(updater(nextPageX)).toMatchObject({
+      value: 0,
+      snapped: false,
+    });
+  });
+
+  it("getSnapUpdater - with scale change 02", () => {
+    const saX = createSnapAxis03();
+
+    let pageX = 0;
+    const updater = saX.getSnapUpdater(31, pageX, {
+      distance: 5,
+      scale: 0.5,
+    });
+
+    let nextPageX = pageX - 1; // 30
+    expect(updater(nextPageX)).toMatchObject({
+      value: 25,
+      snapped: true,
+    });
+
+    nextPageX--; // 29
+    expect(updater(nextPageX)).toMatchObject({
+      value: 25,
+      snapped: false,
+    });
+
+    nextPageX--; // 28
+    expect(updater(nextPageX)).toMatchObject({
+      value: 25,
+      snapped: false,
+    });
+
+    nextPageX--; // 27
+    expect(updater(nextPageX)).toMatchObject({
+      value: 25,
+      snapped: false,
+    });
+
+    nextPageX--; // 26
+    expect(updater(nextPageX)).toMatchObject({
+      value: 20,
+      snapped: true,
+    });
+
+    nextPageX--; // 25
+    expect(
+      updater(nextPageX, {
+        scale: 2,
+      })
+    ).toMatchObject({
+      value: 20,
+      snapped: false,
+    });
+
+    nextPageX--; // 24
+    expect(updater(nextPageX)).toMatchObject({
+      value: 20,
+      snapped: false,
+    });
+
+    nextPageX--; // 23
+    expect(updater(nextPageX)).toMatchObject({
+      value: 20,
+      snapped: false,
+    });
+
+    nextPageX--; // 22
+    expect(updater(nextPageX)).toMatchObject({
+      value: 20,
+      snapped: false,
+    });
+
+    nextPageX--; // 21
+    expect(updater(nextPageX)).toMatchObject({
+      value: 20,
+      snapped: false,
+    });
+
+    nextPageX--; // 20
+    expect(updater(nextPageX)).toMatchObject({
+      value: 20,
+      snapped: false,
+    });
+
+    nextPageX--; // 19
+    expect(updater(nextPageX)).toMatchObject({
+      value: 20,
+      snapped: false,
+    });
+
+    nextPageX -= 6; // 13
+    expect(updater(nextPageX)).toMatchObject({
+      value: 14.5,
+      snapped: false,
+    });
+
+    nextPageX -= 2; // 11
+    expect(updater(nextPageX)).toMatchObject({
+      value: 13.5,
+      snapped: false,
+    });
+  });
+
+  it("getSnapUpdater - with initValue change", () => {
+    const saX = createSnapAxis03();
+
+    let pageX = 0;
+    const updater = saX.getSnapUpdater(31, pageX, {
+      distance: 5,
+    });
+
+    let nextPageX = pageX - 1; // 30
+    expect(updater(nextPageX)).toMatchObject({
+      value: 30,
+      snapped: true,
+    });
+
+    nextPageX--; // 29
+    expect(updater(nextPageX)).toMatchObject({
+      value: 30,
+      snapped: false,
+    });
+
+    nextPageX--; // 28
+    expect(updater(nextPageX)).toMatchObject({
+      value: 30,
+      snapped: false,
+    });
+
+    nextPageX--; // 27
+    expect(
+      updater(nextPageX, {
+        initValue: 26,
+      })
+    ).toMatchObject({
+      value: 25,
+      snapped: true,
+    });
+
+    nextPageX--; // 26
+    expect(updater(nextPageX)).toMatchObject({
+      value: 25,
+      snapped: false,
+    });
+
+    nextPageX--; // 25
+    expect(
+      updater(nextPageX, {
+        initValue: 20,
+      })
+    ).toMatchObject({
+      value: 20,
+      snapped: false,
+    });
+
+    nextPageX--; // 24
+    expect(updater(nextPageX)).toMatchObject({
+      value: 20,
+      snapped: false,
+    });
+
+    nextPageX--; // 23
+    expect(updater(nextPageX)).toMatchObject({
+      value: 20,
+      snapped: false,
+    });
+
+    nextPageX--; // 22
+    expect(updater(nextPageX)).toMatchObject({
+      value: 20,
+      snapped: false,
+    });
+
+    nextPageX--; // 21
+    expect(updater(nextPageX)).toMatchObject({
+      value: 20,
+      snapped: false,
+    });
+
+    nextPageX--; // 20
+    expect(updater(nextPageX)).toMatchObject({
+      value: 14,
+      snapped: false,
+    });
+
+    nextPageX--; // 20
+    expect(
+      updater(nextPageX, {
+        initValue: 6,
+      })
+    ).toMatchObject({
+      value: 0,
+      snapped: true,
+    });
+  });
+
+  it("getSnapUpdater - with delta change", () => {
+    const saX = createSnapAxis03();
+
+    let pageX = 0;
+    const updater = saX.getSnapUpdater(31, pageX, {
+      distance: 5,
+    });
+
+    let nextPageX = pageX - 1; // 30
+    expect(updater(nextPageX)).toMatchObject({
+      value: 30,
+      snapped: true,
+    });
+
+    nextPageX--; // 29  a
+    expect(updater(nextPageX)).toMatchObject({
+      value: 30,
+      snapped: false,
+    });
+
+    nextPageX--; // 28
+    expect(
+      updater(nextPageX, {
+        delta: -8, // a - 8
+      })
+    ).toMatchObject({
+      value: 20,
+      snapped: true,
+    });
+
+    // currentAxisValue 和 delta 应该是独立使用，如果混用会有一次数据对齐，符合当前设计逻辑
+    nextPageX--; // 27
+    expect(updater(nextPageX)).toMatchObject({
+      value: 30,
+      snapped: true,
     });
   });
 });
