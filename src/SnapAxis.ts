@@ -10,6 +10,8 @@ import {
   SnapToResult,
   SnapUpdaterOptions,
   SnapOptions,
+  SnapUpdaterOverrideOptions,
+  SnapGroupUpdaterOverrideOptions,
 } from "./types";
 
 const DefaultGetUpdaterOptions: SnapUpdaterOptions = {
@@ -679,14 +681,9 @@ export class SnapAxis {
     initValues: number[],
     startAxisValue: number,
     options?: SnapUpdaterOptions
-  ): (currentAxisValue: number, options?: SnapUpdaterOptions) => SnapGroupToResults {
-    if (initValues.length === 0) {
-      return () => {
-        return { values: [], snapped: false };
-      };
-    }
-
+  ): (currentAxisValue: number, options?: SnapGroupUpdaterOverrideOptions) => SnapGroupToResults {
     let currentValues = initValues;
+    let noSnapValue = initValues[0];
     let lastAxisValue = startAxisValue;
     let opts = options
       ? {
@@ -694,8 +691,26 @@ export class SnapAxis {
           ...options,
         }
       : DefaultGetUpdaterOptions;
+    return (
+      currentAxisValue: number,
+      options?: SnapGroupUpdaterOverrideOptions
+    ): SnapGroupToResults => {
+      let hasSetDelta = false;
 
-    return (currentAxisValue: number, options?: SnapUpdaterOptions): SnapGroupToResults => {
+      if (options) {
+        if (options.initValues) {
+          initValues = options.initValues;
+
+          noSnapValue = initValues[0];
+          currentValues = initValues;
+        }
+
+        if (!isNil(options.delta)) {
+          currentAxisValue = lastAxisValue + options.delta;
+          hasSetDelta = true;
+        }
+      }
+
       if (isCloseEqual(currentAxisValue, lastAxisValue)) {
         return { values: currentValues, snapped: false };
       }
@@ -711,12 +726,15 @@ export class SnapAxis {
 
       const direction = currentAxisValue > lastAxisValue ? SnapDirection.NEXT : SnapDirection.PREV;
 
+      let delta = hasSetDelta ? options.delta : (currentAxisValue - lastAxisValue) / scale;
+
       lastAxisValue = currentAxisValue;
 
-      const delta = (currentAxisValue - startAxisValue) / scale;
+      if (!initValues.length) {
+        return { values: [], snapped: false };
+      }
 
-      const noSnapValue = initValues[0] + delta; //currentAxisValue - startAxisValue;
-
+      noSnapValue += delta;
       let offset = noSnapValue - currentValues[0];
 
       if (direction === SnapDirection.PREV) {
@@ -757,11 +775,19 @@ export class SnapAxis {
     initValue: number,
     startAxisValue: number,
     options?: SnapUpdaterOptions
-  ): (currentAxisValue: number, options?: SnapUpdaterOptions) => SnapToResult {
+  ): (currentAxisValue: number, options?: SnapUpdaterOverrideOptions) => SnapToResult {
     const updater = this.getSnapGroupUpdater([initValue], startAxisValue, options);
 
-    return (currentAxisValue: number, options?: SnapUpdaterOptions): SnapToResult => {
-      const result = updater(currentAxisValue, options);
+    return (currentAxisValue: number, options?: SnapUpdaterOverrideOptions): SnapToResult => {
+      const result = updater(
+        currentAxisValue,
+        options && !isNil(options.initValue)
+          ? {
+              ...options,
+              initValues: [options.initValue],
+            }
+          : options
+      );
 
       return {
         value: result.values[0],

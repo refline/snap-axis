@@ -48,6 +48,16 @@ export interface SnapUpdaterOptions {
   disableSnap?: boolean; // 是否禁用吸附
 }
 
+export interface SnapUpdaterOverrideOptions extends SnapUpdaterOptions {
+  initValue?: number;
+  delta?: number; // 自定义偏移量
+}
+
+export interface SnapGroupUpdaterOverrideOptions extends SnapUpdaterOptions {
+  initValues?: number[];
+  delta?: number; // 自定义偏移量
+}
+
 export interface SnapGroupToResults {
   /**
    * 是否触发了吸附
