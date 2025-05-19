@@ -6,10 +6,11 @@
   "module": "dist/esm/index.js",
   "types": "dist/lib/index.d.ts",
   "scripts": {
-    "build": "run-s test clean lib cjs esm",
+    "build": "run-s test clean lib cjs esm replaceVersion",
     "cjs": "tsc --module commonjs --target ES5 --downlevelIteration --outDir dist/cjs --declaration false",
     "esm": "tsc --module esnext --target es2015 --outDir dist/esm --declaration false",
     "lib": "tsc",
+    "replaceVersion": "node ./scripts/version.js",
     "clean": "rimraf dist",
     "prepublishOnly": "run-s build",
     "test": "jest"

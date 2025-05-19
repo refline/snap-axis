@@ -20,10 +20,19 @@ const DefaultGetUpdaterOptions: SnapUpdaterOptions = {
   scale: 1,
 };
 
+const _version: string = "__VERSION__";
+
 /**
  * SnapAxis 是一个用于管理吸附轴（如水平轴或垂直轴）的类，支持吸附点的添加、删除、更新以及吸附逻辑的实现。
  */
 export class SnapAxis {
+  /**
+   * 版本号
+   */
+  static get version() {
+    return _version;
+  }
+
   private _debug = false;
   /**
    * 用于管理吸附值的存储和查询
