@@ -259,6 +259,11 @@ export class SnapAxis {
     return idsSet.size > 0;
   }
 
+  /**
+   * 判断多个值（其中一个）是否处于吸附状态。
+   * @param {number[]} values - 吸附值数组
+   * @returns {boolean} - 是否处于吸附状态
+   */
   checkGroupSnapped(values: number[]): boolean {
     for (let i = 0; i < values.length; i++) {
       if (this.checkSnapped(values[i])) {
@@ -579,6 +584,12 @@ export class SnapAxis {
     return result;
   }
 
+  /**
+   * 吸附到最近的吸附点
+   * @param values
+   * @param options
+   * @returns
+   */
   snapGroupToNearest(values: number[], options: SnapToNearestOptions = {}): SnapGroupToResults {
     const result = {
       values: values,
@@ -635,6 +646,12 @@ export class SnapAxis {
     return this.snapToNearest(value, options);
   }
 
+  /**
+   * 如果当前值（多个）处于非吸附状态，则吸附到最近的吸附点。
+   * @param values
+   * @param options
+   * @returns
+   */
   snapGroupToNearestIfNeeded(values: number[], options?: SnapToNearestOptions): SnapGroupToResults {
     if (this.checkGroupSnapped(values)) {
       return {
@@ -659,6 +676,12 @@ export class SnapAxis {
     return this.snapToNearest(value, { ...options, direction: SnapDirection.PREV });
   }
 
+  /**
+   * 吸附到上一个吸附点。
+   * @param values
+   * @param options
+   * @returns
+   */
   snapGroupToPrev(
     values: number[],
     options: Omit<SnapToNearestOptions, "direction"> = {}
@@ -679,6 +702,12 @@ export class SnapAxis {
     return this.snapToNearest(value, { ...options, direction: SnapDirection.NEXT });
   }
 
+  /**
+   * 吸附到下一个吸附点。
+   * @param values
+   * @param options
+   * @returns
+   */
   snapGroupToNext(
     values: number[],
     options: Omit<SnapToNearestOptions, "direction"> = {}
@@ -686,6 +715,13 @@ export class SnapAxis {
     return this.snapGroupToNearest(values, { ...options, direction: SnapDirection.NEXT });
   }
 
+  /**
+   * 获取吸附更新器。
+   * @param initValues
+   * @param startAxisValue
+   * @param options
+   * @returns
+   */
   getSnapGroupUpdater(
     initValues: number[],
     startAxisValue: number,
