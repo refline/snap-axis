@@ -2,6 +2,7 @@ import * as React from "react";
 import "./styles.css";
 import { Demo01 } from "./demos/Demo01";
 import { Demo02 } from "./demos/Demo02";
+import { Demo03 } from "./demos/Demo03";
 
 export default function App() {
   return (
@@ -13,6 +14,10 @@ export default function App() {
       <div style={{ marginTop: 20 }}>
         <div>Demo2</div>
         <Demo02></Demo02>
+      </div>
+      <div style={{ marginTop: 20 }}>
+        <div>Demo3</div>
+        <Demo03></Demo03>
       </div>
     </div>
   );

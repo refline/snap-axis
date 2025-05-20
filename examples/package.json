@@ -9,6 +9,7 @@
   ],
   "main": "src/index.tsx",
   "dependencies": {
+    "matrix2d.js": "^0.6.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
