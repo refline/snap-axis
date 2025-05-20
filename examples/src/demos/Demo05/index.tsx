@@ -71,6 +71,7 @@ for (let i = 0; i < rectCount; i++) {
 }
 
 export function Demo05() {
+  const [scale, setScale] = React.useState(1);
   const [_, setForceUpdate] = React.useState(0);
   const nodeRef = React.useRef(null);
   const [disableSnap, setDisableSnap] = React.useState(false);
@@ -105,6 +106,7 @@ export function Demo05() {
       getAxisXFromRect(currentRect).map((item) => item.value),
       e.clientX,
       {
+        scale,
         distance: 5,
         disableSnap,
       }
@@ -113,6 +115,7 @@ export function Demo05() {
       getAxisYFromRect(currentRect).map((item) => item.value),
       e.clientY,
       {
+        scale,
         distance: 5,
         disableSnap,
       }
@@ -142,11 +145,7 @@ export function Demo05() {
   };
 
   return (
-    <div
-      className={csm.container}
-      style={{ width: CanvasWidth, height: CanvasHeight }}
-      ref={nodeRef}
-    >
+    <div className={csm.container} style={{ width: CanvasWidth, height: CanvasHeight }}>
       <div className={csm.setting}>
         <label>
           禁用吸附：
@@ -158,28 +157,46 @@ export function Demo05() {
             }}
           ></input>
         </label>
-      </div>
-      {rects.map((rect) => {
-        return (
-          <div
-            key={rect.id}
-            className={csm.rect}
-            style={{
-              left: rect.x,
-              top: rect.y,
-              width: rect.width,
-              height: rect.height,
-              backgroundColor: currentRect?.id === rect.id ? "#cccccc" : "",
-            }}
-            onMouseDown={(e) => {
-              handleMouseDown(e, rect);
+        <label>
+          缩放：
+          <select
+            value={scale}
+            onChange={(e) => {
+              const scale = parseFloat(e.target.value);
+              setScale(scale);
+              nodeRef.current.style.transform = `scale(${scale})`;
             }}
           >
-            {rect.id}
-          </div>
-        );
-      })}
-      <RenderRefLines currentRect={currentRect} />
+            <option value="0.25">0.25倍</option>
+            <option value="0.5">0.5倍</option>
+            <option value="1">1倍</option>
+            <option value="2">2倍</option>
+          </select>
+        </label>
+      </div>
+      <div ref={nodeRef}>
+        {rects.map((rect) => {
+          return (
+            <div
+              key={rect.id}
+              className={csm.rect}
+              style={{
+                left: rect.x,
+                top: rect.y,
+                width: rect.width,
+                height: rect.height,
+                backgroundColor: currentRect?.id === rect.id ? "#cccccc" : "",
+              }}
+              onMouseDown={(e) => {
+                handleMouseDown(e, rect);
+              }}
+            >
+              {rect.id}
+            </div>
+          );
+        })}
+        <RenderRefLines currentRect={currentRect} />
+      </div>
     </div>
   );
 }
