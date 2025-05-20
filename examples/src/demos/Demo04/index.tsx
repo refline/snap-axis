@@ -60,8 +60,7 @@ function isCloseEqual(a: number, b: number, tolerance = 1e-9) {
 
 export function Demo04() {
   const nodeRef = React.useRef(null);
-  const [movePoint, setMovePoint] = React.useState({ x: 0, y: 0 });
-  const [position, setPosition] = React.useState({ x: 0, y: 0 });
+  const [position, setPosition] = React.useState({ x: 300, y: 150 });
   const [disableSnap, setDisableSnap] = React.useState(false);
 
   const browserToViewport = (x, y) => {
@@ -109,7 +108,7 @@ export function Demo04() {
         document.body.style.cursor = "";
       }}
     >
-      {snappedX.length || snappedY ? (
+      {snappedX.length || snappedY.length ? (
         <div className={csm.snappedLabel}>
           <div>Snapped Values:</div>
           {[...snappedX, ...snappedY].map((item) => {

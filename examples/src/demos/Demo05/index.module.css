@@ -1,0 +1,77 @@
+.container {
+  position: relative;
+  margin: 0 auto;
+  user-select: none;
+  background-color: #f9f9f9;
+}
+
+.tickWarp {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.tick {
+  height: 5px;
+  position: "relative";
+  border-bottom: 1px solid #757575;
+}
+
+.tickItem {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  height: 5px;
+  background-color: #757575;
+}
+
+.dragBox {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #0307f2;
+  opacity: 0.3;
+}
+
+.snappedLabel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  font-size: 12px;
+  color: #a3a3a3;
+  text-align: left;
+}
+
+.setting {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 12px;
+  color: #a3a3a3;
+
+  label {
+    display: flex;
+    align-items: center;
+  }
+
+  input {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.rect {
+  position: absolute;
+  border: 1px solid rgb(140, 140, 140);
+  box-sizing: border-box;
+  background-color: #e5e5e5;
+  opacity: 0.7;
+  font-size: 12px;
+}
+
+.line {
+  position: absolute;
+  background-color: rgb(238, 69, 69);
+}
