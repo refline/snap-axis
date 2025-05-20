@@ -1,0 +1,73 @@
+.container {
+  height: 80px;
+  position: relative;
+  margin: 0 auto;
+  user-select: none;
+}
+
+.tickWarp {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.tick {
+  height: 5px;
+  position: "relative";
+  border-bottom: 1px solid #757575;
+}
+
+.tickItem {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  height: 5px;
+  background-color: #757575;
+}
+
+.dragLine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: #0307f2;
+}
+
+.dragHandle {
+  position: absolute;
+  top: 0;
+  left: -3px;
+  height: 100%;
+  width: 6px;
+  cursor: move;
+}
+
+.snappedLabel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  font-size: 12px;
+  color: #a3a3a3;
+  text-align: left;
+}
+
+.setting {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 12px;
+  color: #a3a3a3;
+
+  label {
+    display: flex;
+    align-items: center;
+  }
+
+  input {
+    margin: 0;
+    padding: 0;
+  }
+}
