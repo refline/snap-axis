@@ -46,7 +46,7 @@ function Tick({ width, values }) {
   );
 }
 
-export function Basic01() {
+export function Demo01() {
   const [value, setValue] = React.useState(0);
   const [disableSnap, setDisableSnap] = React.useState(false);
 

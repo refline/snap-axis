@@ -52,7 +52,7 @@ function getSnapGroup(value) {
   return [value, value + BoxWidth / 2, value + BoxWidth];
 }
 
-export function Basic02() {
+export function Demo02() {
   const [value, setValue] = React.useState(0);
   const [disableSnap, setDisableSnap] = React.useState(false);
 
