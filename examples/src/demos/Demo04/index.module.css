@@ -26,22 +26,12 @@
   background-color: #757575;
 }
 
-.dragLine {
+.dragBox {
   position: absolute;
   top: 0;
   left: 0;
-  bottom: 0;
-  width: 1px;
   background-color: #0307f2;
-}
-
-.dragHandle {
-  position: absolute;
-  top: 0;
-  left: -3px;
-  height: 100%;
-  width: 6px;
-  cursor: move;
+  opacity: 0.3;
 }
 
 .snappedLabel {
