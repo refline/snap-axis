@@ -484,7 +484,7 @@ export class SnapAxis {
   }
 
   /**
-   * 获取吸附点的详细信息。
+   * 给定轴的某个值，匹配该轴对应的所有吸附点。
    * @param {number} value - 吸附值
    * @returns {ISnapValue[]} - 吸附点数组
    */

@@ -163,7 +163,7 @@ const snapValues = snapAxis.getSnapValues();
 console.log(snapValues); // [{ value: 10, id: "10" }, { value: 30, id: "30" }]
 ```
 
-### getSnappedValues 获取吸附值的详细信息
+### getSnappedValues 给定轴的某个值，匹配该轴对应的所有吸附点。
 
 ```ts
 snapAxis.deleteSnapValue({ value: 10, id: "A" });
@@ -365,3 +365,6 @@ class SnapAxis {
   ): (currentAxisValue: number, options?: SnapUpdaterOptions) => SnapToResult;
 }
 ```
+
+## 相关
+- [refline.js](https://github.com/refline/refline.js)
