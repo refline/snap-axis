@@ -25,7 +25,7 @@ const _version: string = "__VERSION__";
 /**
  * SnapAxis 是一个用于管理吸附轴（如水平轴或垂直轴）的类，支持吸附点的添加、删除、更新以及吸附逻辑的实现。
  */
-export class SnapAxis {
+export class SnapAxis<T extends ISnapValue = ISnapValue> {
   /**
    * 版本号
    */
@@ -41,7 +41,7 @@ export class SnapAxis {
   /**
    * 用于存储所有吸附点的详细信息，键为吸附点的唯一标识符 id，值为吸附点的完整数据。
    */
-  private snapValueMap: Map<ISnapValue["id"], ISnapValue> = new Map();
+  private snapValueMap: Map<ISnapValue["id"], T> = new Map();
   /**
    * 用于存储每个吸附值对应的吸附点 id 集合。键为吸附值，值为吸附点 id 的集合。
    */
@@ -50,7 +50,7 @@ export class SnapAxis {
    * 构造函数，初始化吸附轴。
    * @param {SnapAxisOptions} options - 配置选项，包含吸附点数组和获取吸附单位值的函数。
    */
-  constructor(options: SnapAxisOptions = {}) {
+  constructor(options: SnapAxisOptions<T> = {}) {
     const { snapValues = [], getSnapUnitValue, debug = false } = options;
 
     this._debug = debug;
@@ -84,7 +84,7 @@ export class SnapAxis {
    * 初始化吸附点，将吸附点数据存储到 snapValueMap 和 snapValueToIdsMap 中。
    * @param {ISnapValue[]} snapValues - 吸附点数组
    */
-  private _initSnapValues(snapValues: ISnapValue[]) {
+  private _initSnapValues(snapValues: T[]) {
     const values: number[] = [];
 
     for (let i = 0; i < snapValues.length; i++) {
@@ -141,7 +141,7 @@ export class SnapAxis {
    * 添加吸附点。
    * @param {ISnapValue} snapValue - 要添加的吸附点
    */
-  addSnapValue(snapValue: ISnapValue) {
+  addSnapValue(snapValue: T) {
     const { id, value } = snapValue;
 
     if (!Number.isFinite(value) || id == null) {
@@ -172,7 +172,7 @@ export class SnapAxis {
    * @param {ISnapValue} snapValue - 要更新的吸附点
    * @returns {boolean} - 是否更新成功
    */
-  updateSnapValue(snapValue: ISnapValue): boolean {
+  updateSnapValue(snapValue: T): boolean {
     if (!this.snapValueMap.has(snapValue.id)) {
       return false;
     }
@@ -188,7 +188,7 @@ export class SnapAxis {
    * 批量添加吸附点。
    * @param {ISnapValue[]} snapValues - 要添加的吸附点数组
    */
-  addSnapValues(snapValues: ISnapValue[]) {
+  addSnapValues(snapValues: T[]) {
     snapValues.forEach((snapValue) => this.addSnapValue(snapValue));
   }
 
@@ -197,7 +197,7 @@ export class SnapAxis {
    * @param {ISnapValue} snapValue - 要删除的吸附点
    * @returns {boolean} - 是否删除成功
    */
-  deleteSnapValue(snapValue: ISnapValue): boolean {
+  deleteSnapValue(snapValue: T): boolean {
     const { id, value } = snapValue;
 
     this.snapValueMap.delete(id);
@@ -232,7 +232,7 @@ export class SnapAxis {
    * 批量删除吸附点。
    * @param {ISnapValue[]} snapValues - 要删除的吸附点数组
    */
-  deleteSnapValues(snapValues: ISnapValue[]) {
+  deleteSnapValues(snapValues: T[]) {
     snapValues.forEach((snapValue) => this.deleteSnapValue(snapValue));
   }
   /**
@@ -488,7 +488,7 @@ export class SnapAxis {
    * @param {number} value - 吸附值
    * @returns {ISnapValue[]} - 吸附点数组
    */
-  getSnappedValues(value: number): ISnapValue[] {
+  getSnappedValues(value: number): T[] {
     // const snappedValues: ISnapValue[] = []
 
     // const idsSet = this.snapValueToIdsMap.get(value)
@@ -513,7 +513,7 @@ export class SnapAxis {
    * 获取所有吸附点。
    * @returns {ISnapValue[]} - 所有吸附点数组
    */
-  getSnapValues(): ISnapValue[] {
+  getSnapValues(): T[] {
     return Array.from(this.snapValueMap.values());
   }
   /**

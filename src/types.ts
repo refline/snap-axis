@@ -4,8 +4,8 @@ export interface ISnapValue {
   [x: string | number]: any;
 }
 
-export interface SnapAxisOptions {
-  snapValues?: ISnapValue[];
+export interface SnapAxisOptions<T extends ISnapValue = ISnapValue> {
+  snapValues?: T[];
   debug?: boolean;
   getSnapUnitValue?: (scale?: number) => number;
 }
