@@ -26,6 +26,26 @@ const _version: string = "__VERSION__";
  * SnapAxis 是一个用于管理吸附轴（如水平轴或垂直轴）的类，支持吸附点的添加、删除、更新以及吸附逻辑的实现。
  */
 export class SnapAxis<T extends ISnapValue = ISnapValue> {
+  static fromSnapValues<T extends ISnapValue = ISnapValue>(
+    snapValues: T[],
+    options: Omit<SnapAxisOptions, "snapValues"> = {}
+  ): SnapAxis<T> {
+    return new SnapAxis({ ...options, snapValues });
+  }
+
+  static fromValues<T extends ISnapValue = ISnapValue>(
+    values: number[],
+    options: Omit<SnapAxisOptions, "snapValues"> = {}
+  ): SnapAxis<T> {
+    const radomStr = Math.random().toString(16).substring(2, 6);
+    const snapValues = values.map((value, index) => ({
+      id: `${radomStr}_${index}`,
+      value,
+    })) as T[];
+
+    return new SnapAxis({ ...options, snapValues });
+  }
+
   /**
    * 版本号
    */
@@ -241,6 +261,52 @@ export class SnapAxis<T extends ISnapValue = ISnapValue> {
    */
   deleteSnapValueByIds(ids: ISnapValue["id"][]) {
     ids.forEach((id) => this.deleteSnapValueById(id));
+  }
+
+  /**
+   * 给定轴的某个值，匹配该轴对应的所有吸附点。
+   * @example
+   * const res = snapAxis.snapTo(20, 1, { distance: 10 })
+   * if(snapAxis.checkSnapped(res.value)) {
+   *  console.log('当前匹配到的吸附点', snapAxis.getSnappedValues(res.value))
+   * }
+   * @param {number} value - 吸附值
+   * @returns {ISnapValue[]} - 吸附点数组
+   */
+  getSnappedValues(value: number): T[] {
+    // const snappedValues: ISnapValue[] = []
+
+    // const idsSet = this.snapValueToIdsMap.get(value)
+    // if (!idsSet) {
+    //   return snappedValues
+    // }
+
+    // idsSet.forEach(id => {
+    //   const snapValue = this.snapValueMap.get(id)
+    //   snappedValues.push(snapValue)
+    // })
+
+    // return snappedValues
+
+    const idsSet = this.snapValueToIdsMap.get(value);
+    if (!idsSet) {
+      return [];
+    }
+    return Array.from(idsSet).map((id) => this.snapValueMap.get(id));
+  }
+  /**
+   * 获取所有吸附点。
+   * @returns {ISnapValue[]} - 所有吸附点数组
+   */
+  getSnapValues(): T[] {
+    return Array.from(this.snapValueMap.values());
+  }
+  /**
+   * 获取吸附值管理器。
+   * @returns {SnapValueManager} - 吸附值管理器
+   */
+  getSnapValueManager(): SnapValueManager {
+    return this.snapValueManager;
   }
 
   /**
@@ -481,47 +547,6 @@ export class SnapAxis<T extends ISnapValue = ISnapValue> {
       values: axisValues.map((value) => value + offset),
       snapped: false,
     };
-  }
-
-  /**
-   * 给定轴的某个值，匹配该轴对应的所有吸附点。
-   * @param {number} value - 吸附值
-   * @returns {ISnapValue[]} - 吸附点数组
-   */
-  getSnappedValues(value: number): T[] {
-    // const snappedValues: ISnapValue[] = []
-
-    // const idsSet = this.snapValueToIdsMap.get(value)
-    // if (!idsSet) {
-    //   return snappedValues
-    // }
-
-    // idsSet.forEach(id => {
-    //   const snapValue = this.snapValueMap.get(id)
-    //   snappedValues.push(snapValue)
-    // })
-
-    // return snappedValues
-
-    const idsSet = this.snapValueToIdsMap.get(value);
-    if (!idsSet) {
-      return [];
-    }
-    return Array.from(idsSet).map((id) => this.snapValueMap.get(id));
-  }
-  /**
-   * 获取所有吸附点。
-   * @returns {ISnapValue[]} - 所有吸附点数组
-   */
-  getSnapValues(): T[] {
-    return Array.from(this.snapValueMap.values());
-  }
-  /**
-   * 获取吸附值管理器。
-   * @returns {SnapValueManager} - 吸附值管理器
-   */
-  getSnapValueManager(): SnapValueManager {
-    return this.snapValueManager;
   }
 
   /**
